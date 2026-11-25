@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Swift Invite Earn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+Ethiopic:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#04070d;--blue:#2ea8ff;--orange:#ff8a1f;--green:#19e68c;--text:#f2f9ff;--mut:#97b8d6;--ink:#050b14;--sp:cubic-bezier(.3,1.5,.5,1)}
+*{box-sizing:border-box;font-weight:800;font-family:'Fredoka','Noto Sans Ethiopic',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+input{user-select:text}
+body{margin:0;color:var(--text);min-height:100vh;padding:14px 14px 104px;overflow-x:hidden;background:var(--bg)}
+/* top glow like the reference */
+.glow{position:fixed;inset:0;z-index:-1;pointer-events:none;background:
+ radial-gradient(120% 55% at 50% -8%,#ffb347 0,#ff8a1f 22%,#e65100 48%,transparent 72%),
+ radial-gradient(60% 40% at 0% 100%,#ff6a0055,transparent 70%),
+ radial-gradient(60% 40% at 100% 85%,#ff9d2e40,transparent 70%),
+ linear-gradient(#2a1205 0,#0a0604 60%)}
+.glow::after{content:"";position:absolute;inset:0;background:radial-gradient(70% 30% at 50% 0,#ffd08a88,transparent);}
+@keyframes pulse{50%{opacity:.35}}
+.card,nav,.toast,.fxcard{background:linear-gradient(145deg,#ffffff30,#ffffff0a 50%,#2ea8ff12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #ffffff3d;box-shadow:inset 0 1.5px 0 #ffffff77,inset 0 -1px 0 #ffffff1c,0 12px 36px #0000006b,0 0 28px #2ea8ff22}
+.card{border-radius:26px;padding:16px;margin:12px 0;position:relative;overflow:hidden;animation:pop .38s var(--sp) both}
+.card::before{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,#ffffff2e,transparent);transform:skewX(-20deg);display:none}
+@keyframes shine{0%,75%{left:-70%}100%{left:140%}}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+#app .card:nth-child(2){animation-delay:.05s}#app .card:nth-child(3){animation-delay:.1s}#app .card:nth-child(4){animation-delay:.15s}#app .card:nth-child(5){animation-delay:.2s}
+.top{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}.logo svg{filter:drop-shadow(0 0 14px var(--blue));}
+@keyframes wob{50%{transform:rotate(7deg) scale(1.07)}}
+h1{font-size:19px;margin:0;background:linear-gradient(90deg,#fff,var(--blue) 50%,var(--orange));-webkit-background-clip:text;color:transparent}
+.prof{display:flex;align-items:center;gap:14px}
+.av{width:70px;height:70px;border-radius:50%;border:3px solid var(--orange);box-shadow:0 0 0 4px #ff8a1f33,0 0 26px var(--orange);object-fit:cover;background:linear-gradient(135deg,var(--blue),var(--green));display:grid;place-items:center;font-size:30px;color:var(--ink);}
+@keyframes ring{50%{box-shadow:0 0 0 9px #ff8a1f11,0 0 36px var(--blue)}}
+.hi{font-size:21px}.hi span{display:inline-block;animation:wave 1.8s infinite;transform-origin:70% 70%}
+@keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(18deg)}20%,40%{transform:rotate(-12deg)}}
+.id{display:inline-block;margin-top:4px;background:#050b1488;border:1px solid #ffffff2e;border-radius:20px;padding:3px 11px;font-size:12px;color:var(--blue)}
+.bal{font-size:40px;color:var(--orange);text-shadow:0 0 22px #ff8a1f88}
+.mut{color:var(--mut);font-size:12px;letter-spacing:.3px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.grid div{background:#050b1466;border-radius:16px;padding:10px 4px;text-align:center;border:1px solid #ffffff1f}
+.grid b{display:block;font-size:19px;color:var(--green)}
+/* liquid buttons */
+button{position:relative;overflow:hidden;border:0;border-radius:20px;padding:14px;color:var(--ink);font-size:15px;width:100%;margin-top:10px;cursor:pointer;background:linear-gradient(180deg,#ffc37a,var(--orange) 55%,#e66a00);box-shadow:inset 0 2px 0 #ffffffaa,inset 0 -3px 0 #0000002e,0 6px 0 #8a3d00,0 12px 24px #ff8a1f55;transition:transform .14s var(--sp),box-shadow .14s}
+button.g{background:linear-gradient(180deg,#9dffd0,var(--green) 55%,#0fb870);box-shadow:inset 0 2px 0 #ffffffaa,inset 0 -3px 0 #0000002e,0 6px 0 #07673c,0 12px 24px #19e68c55}
+button.b{background:linear-gradient(180deg,#9fd8ff,var(--blue) 55%,#0b7fd6);box-shadow:inset 0 2px 0 #ffffffaa,inset 0 -3px 0 #0000002e,0 6px 0 #0a4a80,0 12px 24px #2ea8ff55}
+button.alt{background:linear-gradient(180deg,#ffffff3d,#ffffff14);color:var(--text);box-shadow:inset 0 2px 0 #ffffff66,0 6px 0 #02050acc}
+button.red{background:linear-gradient(180deg,#ff8aa0,#ff4d6d);width:auto;padding:6px 12px;margin:0;box-shadow:0 4px 0 #7a1226}
+button:active{transform:translateY(5px) scale(.97);box-shadow:inset 0 2px 0 #ffffff88,0 1px 0 #0006,0 4px 12px #0005}
+button .rip{position:absolute;border-radius:50%;background:#fffa;transform:scale(0);animation:rip .5s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+input{width:100%;padding:13px;border-radius:16px;border:2px solid #ffffff3a;background:#050b1488;color:var(--text);margin-top:10px;font-size:14px;outline:none;transition:.2s}
+input:focus{border-color:var(--blue);box-shadow:0 0 20px #2ea8ff77}
+nav{position:fixed;bottom:12px;left:12px;right:12px;display:flex;border-radius:28px;padding:6px;z-index:5}
+nav a{flex:1;text-align:center;font-size:11px;color:var(--mut);padding:8px 2px;border-radius:22px;transition:.28s var(--sp)}
+nav a.on{color:var(--ink);background:linear-gradient(180deg,#ffc37a,var(--orange));transform:translateY(-7px) scale(1.08);box-shadow:0 8px 18px #ff8a1f77}
+nav a:active{transform:scale(.9)}
+nav a i{display:block;font-style:normal;font-size:20px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #ffffff1f;font-size:13px}
+.ok{color:var(--green)}.bad{color:#ff7a90}
+.bar{height:14px;background:#050b1488;border-radius:10px;overflow:hidden;margin-top:8px;border:1px solid #ffffff22}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--orange) 0 10px,#ffb25e 10px 20px);background-size:28px 28px;transition:width .8s var(--sp);border-radius:10px}
+@keyframes stripe{to{background-position:28px 0}}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);padding:11px 18px;border-radius:20px;z-index:99;font-size:13px;animation:drop .35s var(--sp)}
+@keyframes drop{from{transform:translate(-50%,-80px)}}
+.view{animation:slide .3s cubic-bezier(.2,1,.3,1)}
+@keyframes slide{from{opacity:0;transform:translateX(28px)}}
+/* live log */
+.live{display:flex;align-items:center;gap:8px}.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 var(--green);animation:ping 1.5s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px #19e68c00}100%{box-shadow:0 0 0 0 #19e68c00}}
+.lg{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff1c;animation:lgin .45s var(--sp)}
+@keyframes lgin{from{opacity:0;transform:translateX(-30px) scale(.9)}}
+.lg .ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--blue));font-size:18px}
+.lg .u{flex:1;font-size:13px}.lg .a{color:var(--orange);font-size:15px}
+/* withdraw fx */
+.fx{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#02040acc;backdrop-filter:blur(8px);animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.fxcard{width:84%;max-width:340px;border-radius:34px;padding:26px 18px;text-align:center;position:relative;overflow:hidden;min-height:290px;animation:pop .4s var(--sp)}
+.vault{font-size:78px;animation:vb .45s infinite alternate;display:inline-block;filter:drop-shadow(0 0 22px var(--orange))}
+@keyframes vb{to{transform:scale(1.12) rotate(5deg)}}
+.coin{position:absolute;top:-30px;font-size:30px;animation:fall .9s ease-in forwards}
+@keyframes fall{to{top:150px;opacity:.2;transform:rotate(540deg) scale(.4)}}
+.fly{animation:fly .8s cubic-bezier(.6,-.4,.8,.4) forwards!important}
+@keyframes fly{to{transform:translateY(-420px) scale(.3) rotate(-20deg);opacity:0}}
+.chk{width:110px;height:110px;margin:0 auto}
+.chk circle{stroke-dasharray:300;stroke-dashoffset:300;animation:dr .6s .1s forwards}
+.chk path{stroke-dasharray:80;stroke-dashoffset:80;animation:dr .4s .6s forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.conf{position:fixed;top:-20px;width:10px;height:14px;z-index:101;animation:cf 2.2s ease-out forwards}
+@keyframes cf{to{transform:translateY(105vh) rotate(720deg)}}
+.step{margin-top:12px;font-size:16px;min-height:24px}
+.tapwrap{display:grid;place-items:center;padding:14px 0 6px}
+.tapbtn{width:230px;height:230px;border-radius:50%;display:grid;place-items:center;cursor:pointer;touch-action:manipulation;background:radial-gradient(circle at 35% 28%,#c8e8ff,var(--blue) 45%,#0a4fa8);box-shadow:inset 0 6px 0 #ffffffaa,inset 0 -16px 30px #00000055,0 0 0 10px #2ea8ff22,0 0 64px #2ea8ffaa,0 14px 0 #08306a;transition:transform .07s,box-shadow .07s}
+.tapbtn.p,.tapbtn:active{transform:translateY(11px) scale(.96);box-shadow:inset 0 6px 0 #ffffffaa,inset 0 -16px 30px #00000055,0 0 0 16px #2ea8ff33,0 0 90px #ff8a1f99,0 3px 0 #08306a}
+.tapbtn svg{pointer-events:none;filter:drop-shadow(0 5px 10px #0007)}
+.tapbtn.off{filter:grayscale(.85) brightness(.55)}
+.fl{position:fixed;pointer-events:none;color:var(--orange);font-size:20px;z-index:60;text-shadow:0 0 12px #ff8a1f;animation:fl .9s ease-out forwards}
+@keyframes fl{to{transform:translateY(-95px) scale(1.35);opacity:0}}
+
+/* ===== TAP v2 ===== */
+.stage2{position:relative;width:260px;height:260px;display:grid;place-items:center}
+.stage2 .tapbtn{width:190px;height:190px;position:relative;z-index:2;transform:perspective(500px) rotateX(var(--rx,0)) rotateY(var(--ry,0))}
+.stage2 .tapbtn.p,.stage2 .tapbtn:active{transform:perspective(500px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateY(9px) scale(.95)}
+.ringsvg{position:absolute;inset:0;transform:rotate(-90deg);z-index:1}
+.ringsvg circle{fill:none;stroke-width:9;stroke-linecap:round}
+.rbg{stroke:#ffffff22}
+.rfg{stroke:var(--green);stroke-dasharray:741.4;transition:stroke-dashoffset .25s,stroke .3s;filter:drop-shadow(0 0 8px var(--green))}
+.rfg.low{stroke:#ff4d6d;filter:drop-shadow(0 0 8px #ff4d6d)}
+.orbit{position:absolute;inset:0;animation:spin 6s linear infinite;z-index:0}
+.orbit i{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:var(--orange);box-shadow:0 0 14px var(--orange)}
+.stage2.hot .orbit{animation-duration:1.2s}
+.stage2.hot .tapbtn{box-shadow:inset 0 6px 0 #ffffffaa,inset 0 -16px 30px #00000055,0 0 0 12px #ff8a1f33,0 0 90px #ff8a1fcc,0 14px 0 #08306a}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wave{position:absolute;width:190px;height:190px;border-radius:50%;border:4px solid #fff;opacity:.9;z-index:1;pointer-events:none;animation:wv .6s ease-out forwards}
+@keyframes wv{to{transform:scale(1.6);opacity:0}}
+.sp{position:fixed;width:8px;height:8px;border-radius:50%;z-index:61;pointer-events:none;animation:spk .7s ease-out forwards}
+@keyframes spk{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+.combo{text-align:center;font-size:24px;min-height:34px;color:var(--orange);text-shadow:0 0 16px #ff8a1f}
+.combo.bump{animation:bump .25s var(--sp)}
+@keyframes bump{from{transform:scale(1.6)}}
+.shake{animation:shk .4s}
+@keyframes shk{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.bonuschip{background:linear-gradient(180deg,#ffc37a,var(--orange));color:var(--ink);border-radius:12px;padding:2px 9px;font-size:11px;margin-left:6px}
+.dots{display:flex;gap:8px;justify-content:center;margin:12px 0 4px}
+.dots i{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-style:normal;border:2px dashed #ffffff44;color:var(--mut);font-size:15px;transition:.3s var(--sp)}
+.dots i.f{background:linear-gradient(135deg,var(--green),var(--blue));color:var(--ink);border:2px solid #fff;box-shadow:0 0 18px #19e68c99;transform:scale(1.08)}
+.rw{font-size:56px;color:var(--orange);text-shadow:0 0 26px #ff8a1f;animation:bump .4s var(--sp)}
+.tcard{width:86%;max-width:340px;border-radius:30px;padding:22px 18px;text-align:center;position:relative;background:linear-gradient(160deg,#ff8a1f3d,#2ea8ff2e 60%,#ffffff12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1.5px solid #ffffff55;box-shadow:inset 0 1.5px 0 #ffffff88,0 16px 40px #000a,0 0 40px #ff8a1f55;animation:pop .4s var(--sp)}
+.tcard .row{text-align:left}.tcard button{margin-top:10px}
+.tcard .xb{position:absolute;top:10px;right:10px;width:auto;margin:0;padding:4px 11px;border-radius:14px;background:#ffffff22;box-shadow:none;color:var(--text)}
+/* ===== CHRISTMAS THEME ===== */
+:root{--orange:#e53935}
+.glow{position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--glow,#0a0604)}
+h1{background:var(--title,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;max-height:320px;overflow-y:auto;padding:6px 4px 10px;-webkit-overflow-scrolling:touch}
+.tchip{margin:0;padding:10px 4px 8px;border-radius:20px;background:linear-gradient(145deg,#ffffff2e,#ffffff08 60%,#ffffff14);border:1px solid #ffffff3a;box-shadow:inset 0 1.5px 0 #ffffff77,0 6px 16px #0007;color:var(--text);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:7px;transition:transform .2s var(--sp),box-shadow .2s}
+.tchip i{width:46px;height:46px;border-radius:50%;display:block;background:radial-gradient(circle at 34% 28%,#ffffffcc,var(--a) 38%,var(--b) 72%,var(--bg));box-shadow:inset 0 2px 0 #fff8,0 0 14px var(--a)}
+.tchip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tchip.on{transform:scale(1.05);border-color:#ffffffaa;box-shadow:inset 0 1.5px 0 #ffffffaa,0 0 0 2px var(--a),0 0 22px var(--a)}
+.tchip:active{transform:scale(.92)}
+</style></head><body>
+<div class="glow"></div>
+<div class="top"><div class="logo">
+<svg width="46" height="46" viewBox="0 0 100 100"><polygon points="50,4 58,30 80,20 70,42 96,50 70,58 82,84 56,70 50,96 42,70 18,82 30,58 4,50 30,42 18,20 42,30" fill="#2ea8ff" stroke="#2ea8ff" stroke-width="9" stroke-linejoin="round"/><ellipse cx="42" cy="50" rx="4.5" ry="6.5" fill="#04070d"/><ellipse cx="58" cy="50" rx="4.5" ry="6.5" fill="#04070d"/></svg>
+<h1>🎄 Swift Invite Earn 🎄</h1></div><button class="lang alt" id="lang" onclick="toggleLang()" style="width:auto;margin:0;padding:8px 14px;font-size:12px"></button></div>
+<div id="app"></div><nav id="nav"></nav>
+<script>
+/* ================= CONFIG ================= */
+const CONFIG={
+  BOT_TOKEN:"9247043015:AAHo26xQZhcje_yhguni6Fm6DuAFPE7bty0",
+  BOT_USERNAME:"Swiftinvite_payapp_Bot",   // without @
+  APP_SHORT_NAME:"SwiftETRefferEarning",
+  OWNER_ID:8693389597,
+  LOG_CHANNEL:"@swiftpaymentLog",
+  API_BASE:"",                      // shared server (for cross-user balances & live log)
+  REWARD:2, MIN_WITHDRAW:100, MIN_REFS:15,
+  TAP_REWARD:0.001,                 // SWT per tap
+  SWT_RATE:0.1,                     // 1 SWT = 0.1 Birr
+  TAP_BASE:100,                     // free taps per hour
+};
+const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();tg?.setHeaderColor?.("#e65100");tg?.setBackgroundColor?.("#0a0604");
+const TU=tg?.initDataUnsafe?.user||{id:Number(localStorage.demoId||(localStorage.demoId=Math.floor(1e9*Math.random()))),first_name:"Demo"};
+const REF=tg?.initDataUnsafe?.start_param||new URLSearchParams(location.search).get("ref")||"";
+const $=s=>document.querySelector(s);
+const IS_ADMIN=Number(TU.id)===Number(CONFIG.OWNER_ID); // UI only – enforce on the server too
+
+/* ================= TELEGRAM BOT API (direct) ================= */
+async function bot(method,params={},form){
+  try{const r=await fetch(`https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/${method}`,form?{method:"POST",body:form}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(params)});return await r.json()}catch(e){return{ok:false}}
+}
+async function joinedAll(chs){
+  if(!tg||!CONFIG.BOT_TOKEN)return true; // outside Telegram: preview
+  for(const c of chs){const r=await bot("getChatMember",{chat_id:c,user_id:TU.id});
+    if(!r.ok||!["member","administrator","creator"].includes(r.result.status))return false}
+  return true;
+}
+const mask=s=>{s=String(s||"");const k=Math.ceil(s.length/2);return s.slice(0,k)+"#".repeat(s.length-k)};
+const ago=ts=>{const s=(Date.now()-ts)/1e3;return s<60?"now":s<3600?Math.floor(s/60)+"m":s<86400?Math.floor(s/3600)+"h":Math.floor(s/86400)+"d"};
+
+/* ================= LANGUAGE ================= */
+const I={en:{hi:"Hi",bal:"YOUR BALANCE",refs:"Referrals",per:"Per invite",min:"Min payout",unlock:"WITHDRAW UNLOCK",ref:"referrals",link:"YOUR INVITE LINK",share:"🚀 Share & Earn",copy:"📋 Copy Link",copied:"Copied 🔗",home:"Home",join:"Join",top:"Top",wd:"Withdraw",admin:"Admin",must:"JOIN ALL CHANNELS TO BE ELIGIBLE",none:"No channels required yet.",jbtn:"Join",verify:"✅ I Joined – Verify",elig:"✔ You are eligible",nelig:"✖ Not verified yet",notj:"You haven't joined all channels ❌",board:"🏆 TOP INVITERS",first:"Be the first!",reqwd:"REQUEST WITHDRAWAL",balance:"Balance",eligible:"Eligible",yes:"Yes",joinfirst:"Join channels first",addr:"Telebirr / CBE account number",wdall:"💸 Withdraw All",note:"Proof is posted publicly in",dupe:"⚠️ Another account was already used on this device. Referral rewards are disabled for you.",banned:"🚫 You are banned",lvl:["🌱 Rookie","🥉 Bronze","🥈 Silver","🥇 Gold","💎 Diamond"],s1:"Counting your Birr…",s2:"Packing your vault…",s3:"Sending to admin…",done:"Request Sent! 🎉",wait:"Admin will pay & post proof in the log.",ch:"CHANNELS (bot must be admin there)",addch:"➕ Add Channel",set:"SETTINGS",save:"💾 Save",wds:"WITHDRAWALS",users:"USERS",rew:"Reward per referral (Birr)",mn:"Min withdraw (Birr)",mr:"Referrals needed",b:"Birr",live:"LIVE PAYOUTS",nolog:"No payouts yet",paid:"paid",proof:"📸 Approve + Send Proof",posted:"Posted to log ✅",needref:"Referrals needed: ",minw:"Min withdraw: ",tap:"Tap",left:"Taps left",resets:"Resets in",upg:"UPGRADE TAP LIMIT",watch:"📺 Watch Ad",adof:"ads watched",maxlvl:"Max level reached 🔥",adsdone:"Ad watched ✅",adfail:"Ad not completed ❌",tapup:"Tap limit upgraded! 🚀",full:"Limit reached – wait for reset or upgrade"},
+am:{hi:"ሰላም",bal:"ቀሪ ሂሳብዎ",refs:"ጋባዦች",per:"ለአንድ ግብዣ",min:"ዝቅተኛ ክፍያ",unlock:"ገንዘብ ማውጫ መክፈቻ",ref:"ጋባዦች",link:"የግብዣ ሊንክዎ",share:"🚀 አጋራና ተቀበል",copy:"📋 ሊንክ ቅዳ",copied:"ተቀድቷል 🔗",home:"ዋና",join:"ቻናል",top:"ከፍተኛ",wd:"ማውጫ",admin:"አድሚን",must:"ብቁ ለመሆን ሁሉንም ቻናሎች ይቀላቀሉ",none:"እስካሁን የሚያስፈልግ ቻናል የለም።",jbtn:"ቀላቀል",verify:"✅ ተቀላቅያለሁ – አረጋግጥ",elig:"✔ ብቁ ነዎት",nelig:"✖ አልተረጋገጠም",notj:"ሁሉንም ቻናሎች አልተቀላቀሉም ❌",board:"🏆 ከፍተኛ ጋባዦች",first:"የመጀመሪያው ይሁኑ!",reqwd:"ገንዘብ ለማውጣት ጥያቄ",balance:"ቀሪ ሂሳብ",eligible:"ብቁነት",yes:"አዎ",joinfirst:"መጀመሪያ ቻናሎችን ይቀላቀሉ",addr:"ቴሌብር / ሲቢኢ የሂሳብ ቁጥር",wdall:"💸 ሁሉንም አውጣ",note:"ማረጋገጫው በይፋ ይለጠፋል በ",dupe:"⚠️ በዚህ መሣሪያ ሌላ አካውንት ተጠቅሟል። የግብዣ ሽልማት አይሰራልዎትም።",banned:"🚫 ታግደዋል",lvl:["🌱 ጀማሪ","🥉 ነሐስ","🥈 ብር","🥇 ወርቅ","💎 አልማዝ"],s1:"ብርዎን በመቁጠር ላይ…",s2:"ካዝናዎን በማዘጋጀት ላይ…",s3:"ወደ አድሚን በመላክ ላይ…",done:"ጥያቄ ተልኳል! 🎉",wait:"አድሚን ከፍሎ ማረጋገጫ ይለጥፋል።",ch:"ቻናሎች (ቦቱ አድሚን መሆን አለበት)",addch:"➕ ቻናል ጨምር",set:"ቅንብሮች",save:"💾 አስቀምጥ",wds:"የገንዘብ ጥያቄዎች",users:"ተጠቃሚዎች",rew:"ለአንድ ግብዣ ሽልማት (ብር)",mn:"ዝቅተኛ ማውጫ (ብር)",mr:"የሚያስፈልግ ጋባዥ",b:"ብር",live:"ቀጥታ ክፍያዎች",nolog:"እስካሁን ክፍያ የለም",paid:"ተከፍሏል",proof:"📸 ፍቀድ + ማረጋገጫ ላክ",posted:"ወደ ሎግ ተለጥፏል ✅",needref:"የሚያስፈልግ ጋባዥ: ",minw:"ዝቅተኛ ማውጫ: ",tap:"ንካ",left:"የቀሩ ንካዎች",resets:"ዳግም ይጀምራል በ",upg:"የንካ ገደብ ያሳድጉ",watch:"📺 ማስታወቂያ እይ",adof:"ማስታወቂያ ታይቷል",maxlvl:"ከፍተኛ ደረጃ ደርሰዋል 🔥",adsdone:"ማስታወቂያ ታይቷል ✅",adfail:"ማስታወቂያ አልተጠናቀቀም ❌",tapup:"የንካ ገደብ ተሻሽሏል! 🚀",full:"ገደብ ደርሷል – ዳግም እስኪጀምር ይጠብቁ ወይም ያሳድጉ"}};
+let L=localStorage.lang||(tg?.initDataUnsafe?.user?.language_code==="am"?"am":"en");
+const t=k=>I[L][k];
+function toggleLang(){L=L==="en"?"am":"en";localStorage.lang=L;document.documentElement.lang=L;render()}
+const money=n=>parseFloat((+n).toFixed(4))+" "+t("b");
+const swtFmt=n=>(+n).toFixed(3)+" SWT";
+const toBirr=n=>(+n)*CONFIG.SWT_RATE;
+const totalBirr=u=>(+u.bal)+toBirr(u.swt||0);
+
+/* ============ DEVICE FINGERPRINT ============ */
+async function deviceId(){
+  const raw=[navigator.userAgent,screen.width,screen.height,screen.colorDepth,navigator.language,navigator.hardwareConcurrency,Intl.DateTimeFormat().resolvedOptions().timeZone,(()=>{try{const c=document.createElement("canvas").getContext("2d");c.font="14px Arial";c.fillText("swift",2,2);return c.canvas.toDataURL()}catch(e){return""}})()].join("|");
+  const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(raw));
+  return[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+/* ============ API LAYER ============ */
+async function api(action,data={}){
+  if(CONFIG.API_BASE){const r=await fetch(CONFIG.API_BASE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,data,initData:tg?.initData||"",device:await deviceId()})});return r.json()}
+  return demo(action,data);
+}
+function demo(a,d){ // local preview storage – use API_BASE for shared multi-user data
+  const D=JSON.parse(localStorage.swiftDB5||`{"users":{},"channels":[],"wd":[],"log":[],"set":{"reward":${CONFIG.REWARD},"min":${CONFIG.MIN_WITHDRAW},"minRefs":${CONFIG.MIN_REFS},"tapReward":${CONFIG.TAP_REWARD},"tapBase":${CONFIG.TAP_BASE}},"devices":{},"tasks":[]}`);if(!D.tasks)D.tasks=[];if(!D.promos)D.promos=[];
+  const save=()=>localStorage.swiftDB5=JSON.stringify(D);let u=D.users[TU.id];const S=D.set;
+  const out=(o={})=>{save();return{ok:true,user:D.users[TU.id],set:S,channels:D.channels,tasks:D.tasks,promos:Number(TU.id)===Number(CONFIG.OWNER_ID)?D.promos:[],wd:Number(TU.id)===Number(CONFIG.OWNER_ID)?D.wd:[],log:D.log.slice(-15).reverse(),...o}};
+  if(a==="init"){if(!u){u=D.users[TU.id]={id:TU.id,name:TU.first_name,bal:0,refs:0,by:null,joined:Date.now(),verified:false,taps:0,tapWin:0,bonus:0,adsSeen:0,swt:0,done:[]};
+    const dev=localStorage.demoDev||(localStorage.demoDev=Math.random().toString(36).slice(2));
+    if(D.devices[dev])u.dupe=true;else D.devices[dev]=TU.id;
+    if(REF&&REF!=TU.id&&D.users[REF]&&!u.dupe)u.by=REF}return out()}
+  if(a==="verify"){u.verified=true;if(u.by&&!u.paid&&D.users[u.by]){D.users[u.by].bal+=S.reward;D.users[u.by].refs++;u.paid=true}return out()}
+  if(a==="tap"){const now=Date.now();if(!u.tapWin||now-u.tapWin>=36e5){u.tapWin=now;u.taps=0}
+    const fromBase=Math.max(0,Math.min(d.n,S.tapBase-u.taps)),fromBonus=Math.max(0,Math.min(d.n-fromBase,u.bonus||0));
+    u.taps+=fromBase;u.bonus=(u.bonus||0)-fromBonus;u.swt=+((u.swt||0)+(fromBase+fromBonus)*S.tapReward).toFixed(3);return out()}
+  if(a==="claim"){u.done=u.done||[];const k=D.tasks.find(x=>x.id==d.id);if(!k)return{ok:false,msg:"Task not found"};if(u.done.includes(k.id))return{ok:false,msg:t("taken")};u.done.push(k.id);u.bal=+(u.bal+k.reward).toFixed(4);k.claims=(k.claims||0)+1;return out({got:k.reward})}
+  if(a==="log")return out();
+  if(["addch","delch","addtask","deltask"].includes(a)){
+    if(Number(TU.id)!==Number(CONFIG.OWNER_ID))return{ok:false,msg:"Admin only"};
+    if(a==="addch"){const c=(d.ch||"").trim();if(!c)return{ok:false,msg:"?"};const v=c.startsWith("@")?c:"@"+c;if(!D.channels.includes(v))D.channels.push(v)}
+    if(a==="delch")D.channels=D.channels.filter(x=>x!==d.ch);
+    if(a==="addtask"){const ch=(d.ch||"").trim();if(!d.title||!(d.reward>0))return{ok:false,msg:"?"};D.tasks.push({id:Date.now(),title:d.title,desc:d.desc||"",link:d.link||"",type:d.type||"Other",ch:ch?(ch.startsWith("@")?ch:"@"+ch):"",reward:+d.reward,claims:0})}
+    if(a==="deltask")D.tasks=D.tasks.filter(x=>x.id!=d.id);
+    return out()}
+  if(a==="genpromo"||a==="delpromo"){
+    if(Number(TU.id)!==Number(CONFIG.OWNER_ID))return{ok:false,msg:"Admin only"};
+    if(a==="genpromo"){const ex=new Set(D.promos.map(p=>p.code));(d.codes||[]).forEach(c=>{if(!ex.has(c))D.promos.push({code:c,amt:+d.amt,taps:+d.taps||0,lim:+d.lim,exp:d.exp,chs:d.chs||[],used:[],ts:Date.now()})})}
+    else D.promos=D.promos.filter(p=>p.code!==d.code);
+    return out()}
+  if(a==="promoinfo"||a==="redeem"){
+    const p=D.promos.find(x=>x.code===d.code),dev=localStorage.demoDev||(localStorage.demoDev=Math.random().toString(36).slice(2));
+    if(!p)return{ok:false,msg:t("pnf")};
+    if(Date.now()>p.exp)return{ok:false,msg:t("pexp")};
+    if(p.used.length>=p.lim)return{ok:false,msg:t("pfull")};
+    if(p.used.some(x=>x.uid==u.id||x.dev==dev))return{ok:false,msg:t("pused")};
+    if(a==="promoinfo")return out({pinfo:{chs:p.chs}});
+    p.used.push({uid:u.id,dev,ts:Date.now()});u.bal=+(u.bal+p.amt).toFixed(4);u.bonus=(u.bonus||0)+(p.taps||0);
+    return out({got:p.amt})}
+  if(a==="withdraw"){if(u.refs<S.minRefs)return{ok:false,msg:t("needref")+S.minRefs};const tot=+(u.bal+(u.swt||0)*CONFIG.SWT_RATE).toFixed(4);if(tot<S.min)return{ok:false,msg:t("minw")+S.min+" "+t("b")};
+    D.wd.push({id:Date.now(),uid:u.id,name:u.name,amt:tot,addr:d.addr,refs:u.refs,ts:Date.now(),st:"pending"});u.bal=0;u.swt=0;return out()}
+  if(a==="wdaction"){if(Number(TU.id)!==Number(CONFIG.OWNER_ID))return{ok:false,msg:"Admin only"};const w=D.wd.find(x=>x.id==d.id);if(!w||w.st!=="pending")return{ok:false,msg:"?"};w.st=d.dec;if(d.dec==="rejected"&&D.users[w.uid])D.users[w.uid].bal=+((D.users[w.uid].bal||0)+w.amt).toFixed(4);return out()}
+  if(a==="board")return out({board:Object.values(D.users).sort((x,y)=>y.refs-x.refs).slice(0,10).map(x=>({name:x.name,refs:x.refs}))});
+  return{ok:false}
+}
+
+/* ================= UI ================= */
+let ST={tab:"home"};
+const toast=m=>{const e=document.createElement("div");e.className="toast";e.textContent=m;document.body.appendChild(e);tg?.HapticFeedback?.notificationOccurred("success");setTimeout(()=>e.remove(),2400)};
+const link=()=>CONFIG.APP_SHORT_NAME?`https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=${TU.id}`:`https://t.me/${CONFIG.BOT_USERNAME}?startapp=${TU.id}`;
+const copy=x=>{navigator.clipboard?.writeText(x||link());toast(t("copied"))};
+const share=()=>{const u=`https://t.me/share/url?url=${encodeURIComponent(link())}&text=${encodeURIComponent(L==="am"?"🚀 Swift Invite Earn ተቀላቀሉ፤ ጓደኞችን ጋብዘው ብር ያግኙ!":"🚀 Join Swift Invite Earn & get paid for inviting friends!")}`;tg?tg.openTelegramLink(u):window.open(u)};
+const lvl=r=>t("lvl")[r>=100?4:r>=50?3:r>=20?2:r>=5?1:0];
+const joinCh=c=>{const u="https://t.me/"+c.replace("@","");tg?tg.openTelegramLink(u):window.open(u)};
+const tabs=()=>[["home","🏠",t("home")],["tap","👆",t("tap")],["tasks","📢",t("join")],["board","🏆",t("top")],["wd","💸",t("wd")],...(IS_ADMIN?[["admin","🛠",t("admin")]]:[])];
+function navr(){$("#nav").innerHTML=tabs().map(x=>`<a class="${ST.tab===x[0]?"on":""}" onclick="go('${x[0]}')"><i>${x[1]}</i>${x[2]}</a>`).join("")}
+async function go(x){await flush();tg?.HapticFeedback?.selectionChanged();ST.tab=x;if(x==="board")Object.assign(ST,await api("board"));render()}
+async function act(a,d,after){const r=await api(a,d);if(r.msg)toast(r.msg);if(r.ok!==false)Object.assign(ST,r);if(after)await after(r);render()}
+document.addEventListener("pointerdown",e=>{const b=e.target.closest("button");if(!b)return;const r=document.createElement("span"),s=Math.max(b.offsetWidth,40),p=b.getBoundingClientRect();r.className="rip";r.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-p.left-s/2}px;top:${e.clientY-p.top-s/2}px`;b.appendChild(r);setTimeout(()=>r.remove(),500);tg?.HapticFeedback?.impactOccurred("light")});
+
+const logHTML=()=>(ST.log||[]).map(x=>`<div class="lg"><div class="ic">💸</div><div class="u">${mask(x.name)}<br><span class="mut">🆔 ${mask(x.uid)} · ${ago(x.ts)}</span></div><div class="a">+${money(x.amt)}</div></div>`).join("")||`<div class="mut" style="margin-top:8px">${t("nolog")}</div>`;
+
+function render(){
+  navr();$("#lang").textContent=L==="en"?"አማ":"EN";
+  const u=ST.user,S=ST.set;if(!u)return;const el=$("#app");
+  if(u.banned){el.innerHTML=`<div class="card bad">${t("banned")}</div>`;return}
+  let h="";
+  if(ST.tab==="home"){
+    const pr=Math.min(100,u.refs/S.minRefs*100),pic=TU.photo_url,ini=(TU.first_name||"?")[0].toUpperCase();
+    h=`<div class="card"><div class="prof">${pic?`<img class="av" src="${pic}" onerror="this.outerHTML='<div class=av>${ini}</div>'">`:`<div class="av">${ini}</div>`}
+    <div><div class="hi">${t("hi")}, ${TU.first_name||""} <span>👋</span></div><div class="id" onclick="copy('${TU.id}')">🆔 ${TU.id}</div><div class="mut" style="margin-top:6px">${lvl(u.refs)}</div></div></div></div>
+    <div class="card"><div class="mut">${t("bal")}</div><div class="bal">${money(totalBirr(u))}</div><div class="mut" style="margin-top:4px">🪙 ${swtFmt(u.swt||0)} · 1 SWT = ${CONFIG.SWT_RATE} ${t("b")}</div>
+    <div class="grid"><div><b>${u.refs}</b><span class="mut">${t("refs")}</span></div><div><b>${S.reward}</b><span class="mut">${t("per")}</span></div><div><b>${S.min}</b><span class="mut">${t("min")}</span></div></div></div>
+    <div class="card"><div class="mut">${t("unlock")} • ${u.refs}/${S.minRefs} ${t("ref")}</div><div class="bar"><i style="width:${pr}%"></i></div></div>
+    <div class="card"><div class="mut">${t("link")}</div><input readonly value="${link()}" onclick="copy()"><button class="g" onclick="share()">${t("share")}</button><button class="alt" onclick="copy()">${t("copy")}</button></div>
+    <div class="card"><div class="mut">🎨 THEME</div><div class="tgrid">${THEMES.map((x,i)=>`<button class="tchip ${i==(localStorage.thm||0)?"on":""}" style="--a:${x[1]};--b:${x[2]};--bg:${x[4]}" onclick="setTheme(${i});render()"><i></i><span>${x[0]}</span></button>`).join("")}</div></div>
+    <div class="card"><div class="live"><span class="dot"></span><span class="mut">${t("live")}</span></div><div id="logbox">${logHTML()}</div></div>
+    ${u.dupe?`<div class="card bad">${t("dupe")}</div>`:""}`;
+  }
+  if(ST.tab==="tasks")h=`<div class="card"><div class="mut">${t("must")}</div>${ST.channels.length?ST.channels.map(c=>`<div class="row"><span>📢 ${c}</span><button class="b" style="width:auto;padding:7px 16px;margin:0" onclick="joinCh('${c}')">${t("jbtn")}</button></div>`).join(""):`<div class="mut" style="margin-top:8px">${t("none")}</div>`}
+    <button class="g" onclick="verifyJoin()">${t("verify")}</button><div class="${u.verified?"ok":"bad"}" style="margin-top:12px">${u.verified?t("elig"):t("nelig")}</div></div>
+    <div class="card"><div class="mut">🎁 ${t("sp")}</div>${taskRows(u)}</div>
+    <div class="card"><div class="mut">🎟 ${t("promo")}</div><input id="pcode" placeholder="SWT-XXXXX-XXXXX" style="text-transform:uppercase"><button class="g" onclick="redeemPromo()">${t("redeem")}</button></div>`;
+  if(ST.tab==="board")h=`<div class="card"><div class="mut">${t("board")}</div>${(ST.board||[]).map((b,i)=>`<div class="row"><span>${["🥇","🥈","🥉"][i]||(i+1)+"."} ${mask(b.name)}</span><span class="ok">${b.refs}</span></div>`).join("")||`<div class="mut">${t("first")}</div>`}</div>`;
+  if(ST.tab==="wd")h=`<div class="card"><div class="mut">${t("reqwd")}</div>
+    <div class="row"><span>${t("balance")}</span><span class="bal" style="font-size:16px">${money(totalBirr(u))}</span></div>
+    <div class="row"><span>🪙 SWT</span><span class="ok">${swtFmt(u.swt||0)}</span></div>
+    <div class="row"><span>${t("min")}</span><span>${money(S.min)}</span></div>
+    <div class="row"><span>${t("mr")}</span><span class="${u.refs>=S.minRefs?"ok":"bad"}">${u.refs}/${S.minRefs}</span></div>
+    <div class="row"><span>${t("eligible")}</span><span class="${u.verified?"ok":"bad"}">${u.verified?t("yes"):t("joinfirst")}</span></div>
+    <input id="addr" placeholder="${t("addr")}"><button onclick="doWd()">${t("wdall")}</button>
+    <div class="mut" style="margin-top:10px">${t("note")} ${CONFIG.LOG_CHANNEL}</div></div>`;
+  if(ST.tab==="tap")h=tapUI();
+  if(ST.tab==="admin"&&IS_ADMIN)h=adminUI();
+  el.innerHTML=`<div class="view">${h}</div>`;
+}
+const taskRows=u=>(ST.tasks||[]).filter(k=>!(u.done||[]).includes(k.id)).map(k=>{return `<div class="row"><span>📢 ${k.title}<br><span class="mut">${k.ch} · +${money(k.reward)}</span></span><span style="display:flex;gap:6px"><button class="b" style="width:auto;padding:7px 12px;margin:0" onclick="openTask(${k.id})">${t("jbtn")}</button><button class="g" style="width:auto;padding:7px 12px;margin:0" onclick="claimTask(${k.id})">${t("claim")}</button></span></div>`}).join("")||`<div class="mut" style="margin-top:8px">${t("spnone")}</div>`;
+async function claimTask(id){
+  const k=(ST.tasks||[]).find(x=>x.id==id);if(!k)return;
+  const ok=!k.ch||await joinedAll([k.ch]);
+  if(!ok){tg?.HapticFeedback?.notificationOccurred("error");return toast(t("joinchk"))}
+  const r=await api("claim",{id});
+  if(r.ok===false)return toast(r.msg);
+  Object.assign(ST,r);toast(t("gotr")+money(r.got));render();
+}
+async function verifyJoin(){
+  const ok=await joinedAll(ST.channels);
+  if(!ok){tg?.HapticFeedback?.notificationOccurred("error");return toast(t("notj"))}
+  await act("verify");toast(t("elig"));
+}
+/* ===== ADMIN (owner only) ===== */
+function adminUI(){
+  return `<div class="card"><div class="mut">${t("ch")}</div>
+  ${(ST.channels||[]).map(c=>`<div class="row"><span>📢 ${c}</span><button class="red" onclick="adm('delch',{ch:'${c}'})">✕</button></div>`).join("")}
+  <input id="nch" placeholder="@channel"><button class="b" onclick="adm('addch',{ch:$('#nch').value})">${t("addch")}</button></div>
+  <div class="card"><div class="mut">${t("tasksT")}</div>
+  ${(ST.tasks||[]).map(k=>`<div class="row"><span>${k.title}<br><span class="mut">${k.ch} · +${money(k.reward)} · ${k.claims||0}</span></span><button class="red" onclick="adm('deltask',{id:${k.id}})">✕</button></div>`).join("")}
+  <input id="ttl" placeholder="${t("tt")}"><input id="tch" placeholder="${t("tch")}"><input id="tdsc" placeholder="Task description"><select id="ttyp" style="width:100%;padding:13px;border-radius:16px;border:2px solid #ffffff3a;background:#050b1488;color:var(--text);margin-top:10px;font-size:14px"><option>Join channel</option><option>Start bot</option><option>Follow TikTok</option><option>Follow account</option><option>Other</option></select><input id="tlnk" placeholder="Link or command (e.g. /start)"><input id="trw" type="number" step="0.1" placeholder="${t("tr")}">
+  <button class="g" onclick="adm('addtask',{title:$('#ttl').value,desc:$('#tdsc').value,link:$('#tlnk').value,type:$('#ttyp').value,ch:$('#tch').value,reward:+$('#trw').value})">${t("addtask")}</button></div>`+wdAdminHTML()+promoAdminHTML()}
+function wdAdminHTML(){
+  const ws=(ST.wd||[]).slice().reverse(),pend=ws.filter(w=>w.st==="pending").length;
+  return `<div class="card"><div class="mut">${t("wds")} • ${pend} pending</div>`+(ws.map(w=>`<div class="row" style="flex-direction:column;align-items:stretch"><span><b>${w.name}</b> (${w.uid})<br><span class="mut">💰 ${money(w.amt)} · 🏦 ${w.addr}<br>👥 ${w.refs??"-"} refs · ${new Date(w.ts||Date.now()).toLocaleString()}</span><br><span class="${w.st==="pending"?"mut":w.st==="approved"?"ok":"bad"}">${w.st.toUpperCase()}</span></span>${w.st==="pending"?`<span style="display:flex;gap:6px"><button class="g" style="margin:0;padding:8px" onclick="wdAct(${w.id},'approved')">✔ Approve</button><button class="red" onclick="wdAct(${w.id},'rejected')">✖ Reject</button></span>`:""}</div>`).join("")||`<div class="mut">—</div>`)+`</div>`;
+}
+async function wdAct(id,dec){if(!IS_ADMIN)return;await act("wdaction",{id,dec});toast(dec==="approved"?"Approved ✅":"Rejected ❌")}
+async function adm(a,d){if(!IS_ADMIN)return;await act(a,d)}
+/* ===== PROMO CODES ===== */
+Object.assign(I.en,{promo:"PROMO CODE",redeem:"🎟 Redeem",pcode:"Enter a promo code",pnf:"Invalid code ❌",pexp:"Code expired ⌛",pfull:"Code limit reached",pused:"Already redeemed on this account/device",pgen:"PROMO GENERATOR",pamt:"Birr per code",plim:"Device limit per code",phrs:"Validity (hours)",pqty:"Quantity (max 500)",pch:"Required channels: @ch1, @ch2 (optional)",pgenb:"⚡ Generate Codes",pbad:"Fill all fields correctly",psent:"Sent to your bot chat ✅",pfail:"Open the bot and press Start first ❌",plist:"PROMO CODES",pleft:"left",pexpd:"expired",pn10:"Over 10 codes are sent to your private chat with the bot."});
+Object.assign(I.am,{promo:"የፕሮሞ ኮድ",redeem:"🎟 ተቀበል",pcode:"የፕሮሞ ኮድ ያስገቡ",pnf:"ልክ ያልሆነ ኮድ ❌",pexp:"ኮዱ ጊዜው አልፏል ⌛",pfull:"የኮዱ ገደብ ደርሷል",pused:"በዚህ አካውንት/መሣሪያ ቀድሞ ተጠቅሟል",pgen:"የፕሮሞ ኮድ ማመንጫ",pamt:"በአንድ ኮድ ብር",plim:"የመሣሪያ ገደብ በኮድ",phrs:"ዋጋ ያለው ጊዜ (ሰዓት)",pqty:"ብዛት (ከፍተኛ 500)",pch:"የሚያስፈልግ ቻናል: @ch1, @ch2 (አማራጭ)",pgenb:"⚡ ኮድ አመንጭ",pbad:"ሁሉንም መስኮች በትክክል ይሙሉ",psent:"ወደ ቦት ቻትዎ ተልኳል ✅",pfail:"መጀመሪያ ቦቱን ከፍተው Start ይጫኑ ❌",plist:"የፕሮሞ ኮዶች",pleft:"ቀሪ",pexpd:"አልፏል",pn10:"ከ10 በላይ ኮዶች በቦቱ የግል ቻትዎ ይላካሉ።"});
+const PCH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const prnd=n=>{const a=new Uint32Array(n);crypto.getRandomValues(a);return[...a].map(x=>PCH[x%PCH.length]).join("")};
+const mkCode=()=>"SWT-"+prnd(5)+"-"+prnd(5);
+function promoAdminHTML(){
+  const ps=(ST.promos||[]),act=ps.filter(p=>Date.now()<=p.exp&&p.used.length<p.lim).length;
+  const nc=ST.newCodes?`<div style="margin-top:10px">${ST.newCodes.map(c=>`<div class="row"><span class="ok">${c}</span><button class="alt" style="width:auto;padding:6px 12px;margin:0" onclick="copy('${c}')">📋</button></div>`).join("")}</div>`:"";
+  return `<div class="card"><div class="mut">🎟 ${t("pgen")}</div>
+  <input id="pamt" type="number" step="0.1" placeholder="${t("pamt")}"><input id="ptap" type="number" placeholder="Bonus taps per code (optional)"><input id="plim" type="number" placeholder="${t("plim")}"><input id="phrs" type="number" placeholder="${t("phrs")}"><input id="pqty" type="number" placeholder="${t("pqty")}"><input id="pch" placeholder="${t("pch")}">
+  <div class="mut" style="margin-top:8px">${t("pn10")}</div>
+  <button onclick="genPromo()">${t("pgenb")}</button>${nc}</div>
+  <div class="card"><div class="mut">${t("plist")} • ${act}/${ps.length}</div>
+  ${ps.slice(-10).reverse().map(p=>{const h=Math.round((p.exp-Date.now())/36e5);return `<div class="row"><span>${p.code}<br><span class="mut">${money(p.amt)} · ${p.used.length}/${p.lim} · ${h>0?h+"h "+t("pleft"):t("pexpd")}${p.chs.length?" · "+p.chs.join(" "):""}</span></span><button class="red" onclick="adm('delpromo',{code:'${p.code}'})">✕</button></div>`}).join("")}</div>`}
+async function genPromo(){
+  if(!IS_ADMIN)return;
+  const taps=parseInt($("#ptap").value)||0;const amt=+$("#pamt").value||0,lim=parseInt($("#plim").value),hrs=+$("#phrs").value,qty=parseInt($("#pqty").value);
+  const chs=$("#pch").value.split(/[\s,]+/).filter(Boolean).map(c=>c.startsWith("@")?c:"@"+c);
+  if(!((amt>0||taps>0)&&lim>0&&hrs>0&&qty>0&&qty<=500))return toast(t("pbad"));
+  const codes=[...new Set(Array.from({length:qty},mkCode))];
+  if(codes.length>10){ // send to the owner's private chat with the bot first
+    const n=Math.ceil(codes.length/100);
+    for(let i=0;i<n;i++){
+      const r=await bot("sendMessage",{chat_id:CONFIG.OWNER_ID,parse_mode:"HTML",text:`🎟 PROMO ${i+1}/${n}\n💰 ${amt} Birr · 📱 ${lim} device(s) · ⏳ ${hrs}h\n📢 ${chs.join(" ")||"-"}\n\n`+codes.slice(i*100,i*100+100).map(c=>`<code>${c}</code>`).join("\n")});
+      if(!r.ok)return toast(t("pfail"));
+    }
+  }
+  const r=await api("genpromo",{codes,amt,taps,lim,exp:Date.now()+hrs*36e5,chs});
+  if(r.ok===false)return toast(r.msg);
+  Object.assign(ST,r);ST.newCodes=codes.length>10?null:codes;
+  if(codes.length>10)toast(t("psent"));
+  render();
+}
+async function redeemPromo(){
+  const code=($("#pcode").value||"").trim().toUpperCase();if(!code)return toast(t("pcode"));
+  const i=await api("promoinfo",{code});if(i.ok===false)return toast(i.msg);
+  const ok=await joinedAll((i.pinfo&&i.pinfo.chs)||[]);
+  if(!ok){tg?.HapticFeedback?.notificationOccurred("error");return toast(t("joinchk"))}
+  const r=await api("redeem",{code});if(r.ok===false)return toast(r.msg);
+  Object.assign(ST,r);toast(t("gotr")+money(r.got));render();
+}
+/* ===== WITHDRAW ANIMATION ===== */
+async function doWd(){
+  await flush();const u=ST.user;if(!u.verified)return toast(t("joinfirst"));
+  const addr=$("#addr").value.trim();if(!addr)return toast(t("addr"));
+  const amt=+totalBirr(u).toFixed(4),refs=u.refs;const r=await api("withdraw",{addr});
+  if(r.ok===false)return toast(r.msg);
+  Object.assign(ST,r);
+  bot("sendMessage",{chat_id:CONFIG.OWNER_ID,text:`💸 WITHDRAW REQUEST\n👤 ${TU.first_name} (${TU.id})\n💰 ${amt} Birr\n🏦 ${addr}\n👥 Referrals: ${refs}`});
+  const o=document.createElement("div");o.className="fx";
+  o.innerHTML=`<div class="fxcard"><div id="stage"><div class="vault" id="v">👛</div><div class="step" id="st">${t("s1")}</div></div></div>`;
+  document.body.appendChild(o);const card=o.querySelector(".fxcard");
+  for(let i=0;i<8;i++){const c=document.createElement("div");c.className="coin";c.textContent="🪙";c.style.left=(12+Math.random()*70)+"%";c.style.animationDelay=i*.09+"s";card.appendChild(c)}
+  const sl=ms=>new Promise(r=>setTimeout(r,ms));
+  await sl(1100);$("#st").textContent=t("s2");$("#v").textContent="💼";
+  await sl(700);$("#st").textContent=t("s3");$("#v").classList.add("fly");
+  await sl(800);
+  $("#stage").innerHTML=`<svg class="chk" viewBox="0 0 110 110" fill="none" stroke="#19e68c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx="55" cy="55" r="46"/><path d="M33 56l16 16 29-32"/></svg><div class="bal" style="font-size:34px;margin-top:10px">${money(amt)}</div><div class="step ok">${t("done")}</div><div class="mut">${t("wait")}</div><button class="g" onclick="this.closest('.fx').remove()">OK</button>`;
+  tg?.HapticFeedback?.notificationOccurred("success");
+  for(let i=0;i<45;i++){const c=document.createElement("div");c.className="conf";c.style.left=Math.random()*100+"vw";c.style.background=["#2ea8ff","#19e68c","#ff8a1f","#fff"][i%4];c.style.animationDelay=Math.random()*.5+"s";c.style.borderRadius=i%2?"50%":"2px";document.body.appendChild(c);setTimeout(()=>c.remove(),2800)}
+  render();
+}
+/* ===== RECHECK MEMBERSHIP OVER TIME ===== */
+let chkN=0;
+async function recheck(){
+  if(IS_ADMIN||!ST.user?.verified||!ST.channels?.length||++chkN%6)return; // about every 60s
+  if(!(await joinedAll(ST.channels))){ST.user.verified=false;tg?.HapticFeedback?.notificationOccurred("error");render();lock()}
+}
+/* ===== TASK POPUP + JOIN LOCK ===== */
+let seenT=JSON.parse(localStorage.seenT||"[]");
+function newTaskPop(tasks){
+  if(document.querySelector(".tp,.lock"))return;
+  const done=ST.user?.done||[];
+  const k=(tasks||[]).find(x=>!seenT.includes(x.id)&&!done.includes(x.id));
+  if(!k)return;
+  seenT.push(k.id);localStorage.seenT=JSON.stringify(seenT);
+  const o=document.createElement("div");o.className="fx tp";
+  o.innerHTML=`<div class="tcard"><button class="xb" onclick="this.closest('.fx').remove()">✕</button><div class="mut">📢 NEW TASK</div><div class="hi" style="font-size:20px;margin:8px 0">${k.title}</div><div class="bal" style="font-size:30px">+${money(k.reward)}</div><button onclick="taskFull(${k.id},this.closest('.fx'))">OK · Continue</button></div>`;
+  document.body.appendChild(o);tg?.HapticFeedback?.notificationOccurred("success");
+}
+function taskFull(id,ov){
+  const k=(ST.tasks||[]).find(x=>x.id==id);if(!k||!ov)return;
+  const claimed=(ST.user.done||[]).includes(k.id);
+  ov.innerHTML=`<div class="tcard"><button class="xb" onclick="this.closest('.fx').remove()">✕</button>
+  <div class="mut">📢 ${k.type||"Task"} · ${k.title}</div>
+  <div style="margin:12px 0;text-align:left;font-size:14px;line-height:1.5;white-space:pre-wrap">${k.desc||"—"}</div>
+  <div class="row"><span>🔗 ${k.ch?"Channel":"Link / Command"}</span><span class="ok" style="word-break:break-all;text-align:right">${k.link||k.ch||"-"}</span></div>
+  <div class="row"><span>${t("tr")}</span><span class="ok">+${money(k.reward)}</span></div>
+  ${(k.link||k.ch)?`<button class="b" onclick="openTask(${k.id})">${t("jbtn")}</button>`:""}
+  <button class="g" ${claimed?"disabled":""} onclick="claimTask(${k.id});this.closest('.fx').remove()">${claimed?t("claimed"):t("claim")}</button></div>`;
+}
+function openTask(id){
+  const k=(ST.tasks||[]).find(x=>x.id==id);const l=k&&(k.link||k.ch);if(!l)return;
+  if(l.startsWith("/")){navigator.clipboard?.writeText(l);return toast(t("copied"))}
+  const u=/^https?:/.test(l)?l:"https://t.me/"+l.replace(/^@|^t\.me\//,"");
+  if(tg){/t\.me/.test(u)?tg.openTelegramLink(u):tg.openLink(u)}else window.open(u);
+}
+async function gate(){
+  if(IS_ADMIN||!ST.channels?.length)return;
+  if(await joinedAll(ST.channels)){if(!ST.user.verified)await act("verify");return}
+  lock();
+}
+function lock(){
+  if(document.querySelector(".lock"))return;
+  const o=document.createElement("div");o.className="fx lock";
+  o.innerHTML=`<div class="tcard"><div style="font-size:52px">🔒</div><div class="mut" style="margin:8px 0">${t("must")}</div>${ST.channels.map(c=>`<div class="row"><span>📢 ${c}</span><button class="b" style="width:auto;padding:7px 14px;margin:0" onclick="joinCh('${c}')">${t("jbtn")}</button></div>`).join("")}<button class="g" onclick="unlock(this)">${t("verify")}</button></div>`;
+  document.body.appendChild(o);
+}
+async function unlock(b){
+  if(!(await joinedAll(ST.channels))){tg?.HapticFeedback?.notificationOccurred("error");return toast(t("notj"))}
+  await act("verify");b.closest(".fx").remove();newTaskPop(ST.tasks);
+}
+/* ===== OWNER-ONLY SECRET GESTURE (Up, Down, Down, Left) ===== */
+const GSEQ="UDDL";let gseq="",gx=0,gy=0;
+const gDir=(dx,dy)=>Math.abs(dx)>Math.abs(dy)?(dx<0?"L":"R"):(dy<0?"U":"D");
+function gAdd(k){
+  if(!IS_ADMIN||!ST.user)return;
+  gseq=(gseq+k).slice(-GSEQ.length);
+  if(gseq===GSEQ){gseq="";ST.user.taps=0;ST.user.tapWin=0;tg?.HapticFeedback?.notificationOccurred("success");toast("Owner: taps reset");render()}
+}
+document.addEventListener("pointerdown",e=>{gx=e.clientX;gy=e.clientY});
+document.addEventListener("pointerup",e=>{const dx=e.clientX-gx,dy=e.clientY-gy;if(Math.hypot(dx,dy)>40)gAdd(gDir(dx,dy))});
+document.addEventListener("keydown",e=>{const m={ArrowUp:"U",ArrowDown:"D",ArrowLeft:"L",ArrowRight:"R"};if(m[e.key])gAdd(m[e.key])});
+/* ===== THEMES (30): name, accent (orange), secondary (blue), green, dark base ===== */
+const THEMES=[["Orange Blue","#ff8a1f","#2ea8ff","#19e68c","#2a1205"],["Christmas","#e53935","#ffd700","#1faa52","#0d2a14"],["Neon Pink","#ff2e9a","#00e5ff","#b6ff3b","#1a0520"],["Cyber Yellow","#fcee0a","#00f0ff","#ff2a6d","#0a0a14"],["Ocean","#00c6ff","#0072ff","#58ffc2","#02131f"],["Sunset","#ff6b35","#f7c59f","#ffd166","#2b0f1f"],["Forest","#6ab04c","#badc58","#f9ca24","#0b1a0e"],["Galaxy","#8e44ff","#3ae0ff","#ff7ad9","#07031a"],["Lava","#ff4500","#ffb300","#ff1744","#1a0500"],["Arctic","#7fdbff","#ffffff","#a0f0ff","#061a2b"],["Candy","#ff7eb6","#7afcff","#feff9c","#2b0a1f"],["Matrix","#00ff41","#008f11","#c6ff00","#000a02"],["Royal Gold","#ffd700","#4b0082","#daa520","#120820"],["Mint","#00d2a0","#00a8ff","#b8ff9f","#041614"],["Vaporwave","#ff71ce","#01cdfe","#05ffa1","#1b0f2e"],["Desert","#d4a373","#e9edc9","#ccd5ae","#2b1d12"],["Volcano","#ff5e3a","#ff9a00","#ffe066","#1c0a08"],["Ice Blue","#4fc3f7","#e1f5fe","#80deea","#03101c"],["Rose","#e91e63","#f48fb1","#ffb3c6","#22060f"],["Emerald","#00b894","#55efc4","#81ecec","#03140f"],["Midnight","#5b6cff","#a29bfe","#74b9ff","#05060f"],["Autumn","#d35400","#f39c12","#c0392b","#1f1008"],["Bubblegum","#ff9ff3","#54a0ff","#48dbfb","#1d0f24"],["Steel","#95a5a6","#3498db","#2ecc71","#0c0f12"],["Tropical","#ff9f1a","#2ec4b6","#e71d36","#052e2b"],["Sakura","#ffb7c5","#ff8fab","#cdb4db","#2a1a24"],["Thunder","#f9f871","#6a4c93","#00bbf9","#0d0c1d"],["Coffee","#c68642","#8d5524","#f1c27d","#1a110b"],["Plasma","#ff00cc","#3333ff","#00ffcc","#0a0014"],["Monochrome","#ffffff","#9e9e9e","#cfcfcf","#050505"],["Aurora","#00f5a0","#00d9f5","#7b2ff7","#03111a"],["Ruby","#e0115f","#ff6f91","#ffc2d1","#1a0209"],["Sapphire","#0f52ba","#5dade2","#aed6f1","#020b1f"],["Citrine","#e4d00a","#fff3a0","#ffb703","#1a1602"],["Amethyst","#9b59b6","#d7bde2","#c39bd3","#0f0816"],["Jade","#00a86b","#8fe3b3","#2ecc71","#031a10"],["Copper","#b87333","#e0a96d","#ffcc99","#1a0f08"],["Bronze","#cd7f32","#f5deb3","#daa06d","#15100a"],["Silver","#c0c0c0","#e8e8e8","#9aa5b1","#0b0d10"],["Platinum","#e5e4e2","#b0c4de","#f0f0f0","#0a0b0d"],["Inferno","#ff3d00","#ff9100","#ffea00","#140300"],["Glacier","#a7d8ff","#5ea9e0","#d8f3ff","#071624"],["Toxic","#b6ff00","#39ff14","#ccff33","#07100a"],["Blood Moon","#8b0000","#ff4500","#ff6a3d","#0a0000"],["Deep Sea","#003d5c","#00a6a6","#7fffd4","#001018"],["Hologram","#ff9ef5","#9ef5ff","#fff79e","#0b0b14"],["Retro Wave","#ff00a0","#00ffff","#ffd300","#120024"],["Pastel Sky","#a2d2ff","#bde0fe","#ffc8dd","#0b1b2b"],["Ember","#ff7b00","#ff5400","#ffbd00","#120603"],["Pine","#1b4332","#52b788","#95d5b2","#050f0a"],["Lilac","#c8a2c8","#e6e6fa","#d8bfd8","#120d18"],["Crimson Night","#dc143c","#800020","#ff4d6d","#100005"],["Honey","#f6a800","#ffd166","#fbbf24","#17110a"],["Slate","#64748b","#94a3b8","#cbd5e1","#0a0e14"],["Peacock","#005f73","#0a9396","#94d2bd","#00171c"],["Nebula","#ff5fa2","#6c63ff","#00d4ff","#0c0320"],["Sandstorm","#c2a878","#e6ccb2","#ddb892","#1e160d"],["Tangerine","#ff9966","#ff5e62","#ffcc70","#1c0e06"],["Cosmic Latte","#ffe8d6","#ddb892","#b08968","#14100c"],["Galactic Green","#00ff9c","#00b3ff","#c6ff00","#00100a"],["Electric Blue","#0066ff","#00ccff","#66ffff","#00061a"],["Berry","#8e0e4a","#c71f6e","#ff7eb3","#14030b"],["Lagoon","#00b4d8","#0077b6","#90e0ef","#021824"],["Dusk","#ff7e5f","#feb47b","#6a1b9a","#120716"],["Glitch","#ff0055","#00ffea","#fffb00","#050505"],["Sage","#87a96b","#c5d5a0","#b2c2a0","#0c110c"],["Cherry Blossom","#ffb7c5","#ffd1dc","#ff8fa3","#1d0c12"],["Apple","#ff3b30","#34c759","#007aff","#0a0a0a"],["Sunflower","#ffc300","#ffdd55","#ff8d00","#16120a"],["Denim","#1f3a93","#4a6fa5","#9db4d4","#070b16"],["Velvet","#800040","#b03060","#e0457b","#10000a"],["Pearl","#f8f1f1","#d6c6c6","#e8dcd2","#0e0c0c"],["Obsidian","#2c2c3a","#7a7a9d","#b4b4c8","#030305"],["Bamboo","#7cb518","#c7d36f","#4f6d1f","#0a1205"],["Poppy","#ff5a5f","#ffb3a7","#ffd166","#1a0707"],["Storm","#3d5a80","#98c1d9","#e0fbfc","#06090f"],["Mango","#ff9f1c","#ffbf69","#2ec4b6","#1a1005"],["Indigo Night","#3f37c9","#4895ef","#4cc9f0","#050520"],["Fire and Ice","#ff4d6d","#4cc9f0","#ffd60a","#0b0b14"],["Golden Hour","#ff9a3c","#ffd166","#ef476f","#1f0f05"]];
+function applyTheme(i){
+  const [,a,b,g,bg]=THEMES[+i]||THEMES[0],r=document.documentElement.style;
+  r.setProperty("--orange",a);r.setProperty("--blue",b);r.setProperty("--green",g);
+  r.setProperty("--glow",`radial-gradient(120% 55% at 50% -8%,${a} 0,${b}88 25%,transparent 72%),radial-gradient(60% 40% at 0% 100%,${a}55,transparent 70%),radial-gradient(60% 40% at 100% 85%,${b}40,transparent 70%),linear-gradient(${bg} 0,#050505 60%)`);
+  r.setProperty("--title",`linear-gradient(90deg,#fff,${b} 50%,${a})`);
+}
+function setTheme(i){localStorage.thm=i;applyTheme(i)}
+/* ===== EXTRA TEXT ===== */
+Object.assign(I.en,{sp:"SPONSOR TASKS",spnone:"No sponsor tasks right now. Check back soon.",claim:"Claim",claimed:"Claimed ✔",joinchk:"Join the channel first ❌",taken:"Already claimed",gotr:"Reward added: ",tt:"Task title",tr:"Reward (Birr)",tch:"@sponsorchannel",addtask:"➕ Add Sponsor Task",tasksT:"SPONSOR TASKS",swtbal:"SWT BALANCE",adtitle:"WATCH 5 ADS = +50 TAPS",bonus:"Bonus taps",ontap:"Base taps",fire:"ON FIRE!",gift:"BONUS UNLOCKED!",addone:"Ad watched",taps:"TAPS"});
+Object.assign(I.am,{sp:"የስፖንሰር ተግባራት",spnone:"አሁን ምንም ተግባር የለም። ቆይተው ይመልከቱ።",claim:"ተቀበል",claimed:"ተቀብለዋል ✔",joinchk:"መጀመሪያ ቻናሉን ይቀላቀሉ ❌",taken:"ቀድሞ ተቀብለዋል",gotr:"ሽልማት ተጨምሯል: ",tt:"የተግባር ርዕስ",tr:"ሽልማት (ብር)",tch:"@sponsorchannel",addtask:"➕ ተግባር ጨምር",tasksT:"የስፖንሰር ተግባራት",swtbal:"የSWT ቀሪ ሂሳብ",adtitle:"5 ማስታወቂያ = +50 ንካ",bonus:"ተጨማሪ ንካ",ontap:"መደበኛ ንካ",fire:"እሳት ነው!",gift:"ሽልማት ተከፍቷል!",addone:"ማስታወቂያ ታይቷል",taps:"ንካ"});
+
+/* ===== TAP TAP ===== */
+let pend=0,flT,combo=0,comboT,lastTap=0;
+const RING=741.4;
+function tapState(){const u=ST.user,S=ST.set;if(IS_ADMIN)return{lim:S.tapBase,baseLeft:S.tapBase,bonus:0,left:S.tapBase}; // owner: unlimited tapsif(u.tapWin&&Date.now()-u.tapWin>=36e5){u.taps=0;u.tapWin=0}
+  const baseLeft=Math.max(0,S.tapBase-u.taps),bonus=u.bonus||0;return{lim:S.tapBase,baseLeft,bonus,left:baseLeft+bonus}}
+function applyLocal(u,k){ // base taps first, then bonus taps
+  const S=ST.set,fb=Math.max(0,Math.min(k,S.tapBase-u.taps)),fo=Math.max(0,Math.min(k-fb,u.bonus||0));
+  u.taps+=fb;u.bonus=(u.bonus||0)-fo;u.swt=+((u.swt||0)+(fb+fo)*S.tapReward).toFixed(3);return fb+fo}
+function tapUI(){const u=ST.user,{lim,baseLeft,bonus,left}=tapState();
+return `<div class="card" id="tapcard"><div class="mut">🪙 ${t("swtbal")}</div><div class="bal" id="tapbal">${swtFmt(u.swt||0)}</div>
+<div class="mut" id="tapbirr">≈ ${money(toBirr(u.swt||0))} · 1 SWT = ${CONFIG.SWT_RATE} ${t("b")}</div>
+<div class="tapwrap"><div class="stage2" id="stage2">
+ <div class="orbit"><i style="transform:translate(-50%,-50%) rotate(0deg) translateY(-118px)"></i><i style="transform:translate(-50%,-50%) rotate(120deg) translateY(-118px)"></i><i style="transform:translate(-50%,-50%) rotate(240deg) translateY(-118px)"></i></div>
+ <svg class="ringsvg" viewBox="0 0 260 260"><circle class="rbg" cx="130" cy="130" r="118"/><circle class="rfg" id="tapring" cx="130" cy="130" r="118" style="stroke-dashoffset:${RING*(1-baseLeft/lim)}"/></svg>
+ <div class="tapbtn ${left?"":"off"}" id="tapbtn" onpointerdown="doTap(event)"><svg width="120" height="120" viewBox="0 0 100 100"><polygon points="50,4 58,30 80,20 70,42 96,50 70,58 82,84 56,70 50,96 42,70 18,82 30,58 4,50 30,42 18,20 42,30" fill="#eaf6ff" stroke="#eaf6ff" stroke-width="9" stroke-linejoin="round"/><ellipse cx="42" cy="50" rx="4.5" ry="6.5" fill="#0a4fa8"/><ellipse cx="58" cy="50" rx="4.5" ry="6.5" fill="#0a4fa8"/></svg></div>
+</div></div>
+<div class="combo" id="combo"></div>
+<div class="row"><span>${t("left")} <span class="bonuschip" id="tapbonus" style="${bonus?"":"display:none"}">⚡ +${bonus}</span></span><span class="ok" id="tapleft">${left}</span></div>
+<div class="row"><span>${t("resets")}</span><span id="tapreset">—:—</span></div></div>
+`}
+function updTap(){if(ST.tab!=="tap")return;const a=$("#tapbal");if(!a)return;const u=ST.user,{lim,baseLeft,bonus,left}=tapState();
+ a.textContent=swtFmt(u.swt||0);$("#tapbirr").textContent="≈ "+money(toBirr(u.swt||0))+" · 1 SWT = "+CONFIG.SWT_RATE+" "+t("b");
+ $("#tapleft").textContent=left;const r=$("#tapring");r.style.strokeDashoffset=RING*(1-baseLeft/lim);r.classList.toggle("low",baseLeft/lim<.25);
+ const bc=$("#tapbonus");bc.style.display=bonus?"":"none";bc.textContent="⚡ +"+bonus;const bn=$("#bonusn");if(bn)bn.textContent="⚡ "+bonus;
+ $("#tapbtn").classList.toggle("off",!left)}
+function burst(x,y,n){const cols=["#2ea8ff","#19e68c","#ff8a1f","#ffffff","#ffc37a"];
+ for(let i=0;i<n;i++){const s=document.createElement("div"),a=Math.random()*6.28,d=40+Math.random()*60;s.className="sp";
+  s.style.cssText=`left:${x}px;top:${y}px;background:${cols[i%5]};--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;box-shadow:0 0 10px ${cols[i%5]}`;
+  document.body.appendChild(s);setTimeout(()=>s.remove(),700)}}
+let AC=null;
+function tapSound(){
+  try{
+    AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    const t0=AC.currentTime,rare=Math.random()<0.08||(combo>0&&combo%25===0);
+    const tone=(f,start,dur,vol,slide)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.setValueAtTime(f,start);if(slide)o.frequency.exponentialRampToValueAtTime(slide,start+dur);g.gain.setValueAtTime(0.0001,start);g.gain.exponentialRampToValueAtTime(vol,start+0.01);g.gain.exponentialRampToValueAtTime(0.0001,start+dur);o.connect(g).connect(AC.destination);o.start(start);o.stop(start+dur+0.02)};
+    if(rare){[1046,1318,1568,2093].forEach((f,i)=>tone(f,t0+i*0.07,0.6,0.12))}
+    else tone(1200,t0,0.09,0.18,500);
+  }catch(e){}
+}
+let NB=null;
+function fireSound(c){
+  try{
+    AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    const t0=AC.currentTime,vol=Math.min(0.45,0.1+c/120),dur=0.22;
+    if(!NB){NB=AC.createBuffer(1,AC.sampleRate*0.5,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+    const src=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();
+    src.buffer=NB;f.type="bandpass";f.Q.value=0.8;f.frequency.setValueAtTime(300,t0);f.frequency.exponentialRampToValueAtTime(900+Math.min(c,50)*20,t0+dur);
+    g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    src.connect(f).connect(g).connect(AC.destination);src.start(t0);src.stop(t0+dur);
+    const o=AC.createOscillator(),og=AC.createGain();o.type="sine";o.frequency.setValueAtTime(140,t0);o.frequency.exponentialRampToValueAtTime(60,t0+dur);
+    og.gain.setValueAtTime(vol*0.8,t0);og.gain.exponentialRampToValueAtTime(0.0001,t0+dur);o.connect(og).connect(AC.destination);o.start(t0);o.stop(t0+dur+0.02);
+  }catch(e){}
+}
+function doTap(e){const u=ST.user,S=ST.set;if(!tapState().left){tg?.HapticFeedback?.notificationOccurred("error");return toast(t("full"))}
+ if(!u.tapWin)u.tapWin=Date.now();applyLocal(u,1);pend++;
+ tg?.HapticFeedback?.impactOccurred(combo>=10?"medium":"light");
+ const b=$("#tapbtn"),rc=b.getBoundingClientRect();
+ b.style.setProperty("--rx",((e.clientY-rc.top-rc.height/2)/rc.height*-28)+"deg");b.style.setProperty("--ry",((e.clientX-rc.left-rc.width/2)/rc.width*28)+"deg");
+ b.classList.add("p");setTimeout(()=>b.classList.remove("p"),90);
+ const st=$("#stage2"),w=document.createElement("div");w.className="wave";st.appendChild(w);setTimeout(()=>w.remove(),620);
+ burst(e.clientX,e.clientY,combo>=10?10:6);
+ const f=document.createElement("div");f.className="fl";f.textContent="+"+S.tapReward+" SWT";f.style.left=e.clientX-34+(Math.random()*40-20)+"px";f.style.top=e.clientY-40+"px";document.body.appendChild(f);setTimeout(()=>f.remove(),900);
+ // combo (visual only)
+ const now=Date.now();combo=now-lastTap<500?combo+1:1;lastTap=now;
+ const cb=$("#combo");if(combo>=5){cb.textContent=(combo>=25?"🔥🔥 ":"🔥 ")+"x"+combo;cb.classList.remove("bump");void cb.offsetWidth;cb.classList.add("bump")}
+ st.classList.toggle("hot",combo>=10);tapSound();if(combo>=10)fireSound(combo);
+ if(combo>0&&combo%25===0){const c=$("#tapcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");cb.textContent="🔥🔥 "+t("fire")+" x"+combo;burst(e.clientX,e.clientY,22);tg?.HapticFeedback?.notificationOccurred("success")}
+ clearTimeout(comboT);comboT=setTimeout(()=>{combo=0;const c=$("#combo");if(c)c.textContent="";const s=$("#stage2");if(s)s.classList.remove("hot")},900);
+ updTap();clearTimeout(flT);flT=setTimeout(flush,600)}
+async function flush(){if(!pend||!ST.user)return;const n=pend;pend=0;const r=await api("tap",{n});if(r.user){ST.user=r.user;if(pend)applyLocal(ST.user,pend);updTap()}}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)flush()});
+setInterval(()=>{if(ST.tab!=="tap"||!ST.user)return;const u=ST.user,el=$("#tapreset");if(!el)return;if(u.tapWin){const r=36e5-(Date.now()-u.tapWin);if(r<=0){u.taps=0;u.tapWin=0;updTap();el.textContent="—:—"}else el.textContent=String(Math.floor(r/6e4)).padStart(2,"0")+":"+String(Math.floor(r/1e3)%60).padStart(2,"0")}else el.textContent="—:—"},1000);
+/* live log refresh */
+setInterval(async()=>{if(!ST.user)return;const r=await api("log");if(r.tasks){ST.tasks=r.tasks;newTaskPop(r.tasks)}if(r.wd&&JSON.stringify(r.wd)!==JSON.stringify(ST.wd)){ST.wd=r.wd;if(ST.tab==="admin")render()}recheck();if(ST.tab!=="home")return;const n=JSON.stringify(r.log),o=JSON.stringify(ST.log);if(n!==o){ST.log=r.log;const b=$("#logbox");if(b)b.innerHTML=logHTML()}},10000);
+document.documentElement.lang=L;applyTheme(localStorage.thm||0);
+api("init",{ref:REF,user:TU}).then(async r=>{Object.assign(ST,r);render();await gate();newTaskPop(ST.tasks)});
+</script></body></html>
